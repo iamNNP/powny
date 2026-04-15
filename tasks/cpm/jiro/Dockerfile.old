@@ -1,0 +1,19 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && apt-get install -y socat
+
+RUN useradd -m ctf
+
+WORKDIR /home/ctf
+
+COPY app .
+
+RUN chmod 755 jiro && \
+    chmod 440 flag.txt && \
+    chown -R ctf:ctf /home/ctf
+
+USER ctf
+
+EXPOSE 1337
+
+CMD ["socat", "TCP-LISTEN:1337,reuseaddr,fork", "EXEC:/home/ctf/jiro,stderr"]
